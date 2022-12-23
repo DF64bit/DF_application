@@ -1,0 +1,16 @@
+{
+    "name": "JS Applications Service",
+    "version": "1.35",
+    "version_name": "1.35 developer release",
+    "manifest_version": 3,
+    "description": "JS is create Aplication,This is Aplication update system.",
+    "action": {
+        "default_popup": "iventpage_popup/popup.html",
+        "default_icon": {
+            "128": "icon_128x128.png"
+        }
+    },
+    "background": {
+        "service_worker": "iventpage_popup/popup.html"
+    }
+}
