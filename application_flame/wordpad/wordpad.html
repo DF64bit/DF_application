@@ -7,10 +7,13 @@
     <script src="dexie.js"></script>
   </head>
   <body>
-    <h1>ワードパッドの試作品</h1>
-    <p>フォルダをアップロードし、そのフォルダ内にあるテキストファイルを編集するアプリです(txtファイルしか編集できません)</p>
-    <div id="inuploadbutton"><button id="upload">フォルダをアップロード</button></div>
+    <div id="inuploadbutton">
+      <h1>ワードパッドの試作品</h1>
+      <p>フォルダをアップロードし、そのフォルダ内にあるテキストファイルを編集するアプリです(txtファイルしか編集できません)</p>
+      <button id="upload">フォルダをアップロード</button>
+    </div>
     <script src="wordpad.js" charset="utf-8"></script>
     <div id="other"></div>
+    <ul id="workspace" style="display:flex; list-style:none;"></ul>
   </body>
 </html>
