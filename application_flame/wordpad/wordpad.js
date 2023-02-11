@@ -52,13 +52,19 @@ async (e)=>{
     var file = await dirHandle.getFileHandle(flname);
     var fileData = await file.getFile();
     var text = await fileData.text();
-    document.getElementById("workspace").innerHTML = document.getElementById("workspace").innerHTML + '<li id=' + flname + '"-edit">' + flname + '<br><textarea id="' + flname + "-editing" + '" name="content" rows="5" cols="33">' + text + '</textarea> <button id="' + flname + '-save">保存</button></li>';
 
-    var saveButton = document.getElementById(flname + "-save");
+    var newworkspace = document.createElement("li");
+    document.getElementById("workspace").appendChild(newworkspace);
+    newworkspace.id = flname + "-edit";
+    newworkspace.innerHTML = flname + '<br><textarea id="' + flname + "-editing" + '" name="content" rows="5" cols="33">' + text + '</textarea>';
+    var saveButton = document.createElement("button");
+    newworkspace.appendChild(saveButton);
+    saveButton.id = flname + "-save";
+    saveButton.textContent = "保存";
     console.log(flname + "-save");
     console.log("次進んだぞ");
     console.log(flname);
-    document.getElementById(flname + "-save").addEventListener("click",
+    saveButton.addEventListener("click",
       async (e)=>{
       var sampleConfig = document.getElementById(flname + "-editing").value;
       
