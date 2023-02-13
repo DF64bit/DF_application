@@ -4,7 +4,10 @@
     <meta charset="utf-8">
     <link rel="icon" type="image/svg" href="assets/wordpad-icon.svg">
     <title>JS Wordpad</title>
-    <script src="dexie.js"></script>
+    <script src="umd.js"></script>
+    <script type="module">
+      import { get, set } from 'esm.js';
+    </script>
   </head>
   <body>
     <div id="inuploadbutton">
