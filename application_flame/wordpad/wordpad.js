@@ -1,7 +1,19 @@
 var uploadButton = document.getElementById("upload");
 uploadButton.addEventListener("click",
 async (e)=>{
-  const dirHandle = await window.showDirectoryPicker();
+  var dirHandle = await idbKeyval.get('dir');
+ 
+  if (dirHandle) {
+    var permission = await dirHandle.queryPermission({ mode: 'readwrite' });
+    if (permission !== 'granted') {
+      permission = await dirHandle.requestPermission({ mode: 'readwrite' });
+      if (permission !== 'granted') {
+        window.alert('ERROR発生したじゃねえか!');
+      }
+    }
+  } else {
+    dirHandle = await window.showDirectoryPicker();
+  };
   console.log(dirHandle);
 
   document.getElementById("other").innerHTML = "開いてるファイルが無い<button id='opfile'>ファイルを開く</button>";
@@ -78,7 +90,7 @@ async (e)=>{
       await writableStream.close();
       window.alert("保存しました。 ");
       console.log(flname);
+      idbKeyval.set('dir', dirHandle);
     });
   };
 });
-
