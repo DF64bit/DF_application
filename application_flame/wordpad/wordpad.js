@@ -44,7 +44,7 @@ async (e)=>{
           openfile();
         });
         console.log(i)
-        editingfile(e.target.innerHTML);
+        editingfile(e.srcElement.innerHTML);
         console.log(files[i]);
       });
   }
@@ -91,8 +91,12 @@ async (e)=>{
     var file = await dirHandle.getFileHandle(flname);
     var fileData = await file.getFile();
     var filecontent = await fileData.text();
-    var text = JSON.parse(filecontent).content
-    var title = JSON.parse(filecontent).title
+    var dpObj = new DOMParser();
+    var xmlText = '<?xml version="1.0" encoding="UTF-8"?>';
+    xmlText += filecontent;
+    var xmlDoc = dpObj.parseFromString(xmlText, "text/xml");
+    var title = xmlDoc.getElementsByTagName('title')[0].textContent;
+    var content = xmlDoc.getElementsByTagName("content")[0].innerHTML;
 
     document.title = flname + " - JS WordPad";
 
@@ -100,23 +104,26 @@ async (e)=>{
     var newworkspace = document.createElement("div");
     document.getElementById("workspace").appendChild(newworkspace);
     newworkspace.id = flname + "-edit";
-    newworkspace.innerHTML = flname + '<br><textarea id="' + flname + "-editing" + '" name="content" rows="25" cols="117">' + text + '</textarea>';
+    newworkspace.innerHTML = content;
     var saveButton = document.createElement("button");
-    newworkspace.appendChild(saveButton);
+    document.getElementById("insavebutton").appendChild(saveButton);
     saveButton.id = flname + "-save";
     saveButton.textContent = "保存";
     console.log(flname + "-save");
     console.log("次進んだぞ");
     console.log(flname);
     ontabclickedprocess.push(
-    async (e)=>{
+      async (e)=>{
         console.log(flname)
-        console.log(e)
         var file = await dirHandle.getFileHandle(flname)
         var fileData = await file.getFile()
-        var filecontent = await fileData.text()
-        var text = JSON.parse(filecontent).content
-        var title = JSON.parse(filecontent).title
+        var text = await fileData.text()
+        var dpObj = new DOMParser()
+        var xmlText = '<?xml version="1.0" encoding="UTF-8"?>'
+        xmlText += filecontent
+        var xmlDoc = dpObj.parseFromString(xmlText, "text/xml")
+        var title = xmlDoc.getElementsByTagName('title')[0].textContent
+        var content = xmlDoc.getElementsByTagName("content")[0].innerHTML
 
         document.title = flname + " - JS WordPad"
 
@@ -124,9 +131,9 @@ async (e)=>{
         var newworkspace = document.createElement("div")
         document.getElementById("workspace").appendChild(newworkspace)
         newworkspace.id = flname + "-edit"
-        newworkspace.innerHTML = flname + '<br><textarea id="' + flname + "-editing" + '" name="content" rows="25" cols="117">' + text + '</textarea>'
+        newworkspace.innerHTML = content
         var saveButton = document.createElement("button")
-        newworkspace.appendChild(saveButton)
+        document.getElementById("insavebutton").appendChild(saveButton)
         saveButton.id = flname + "-save"
         saveButton.textContent = "保存"
         console.log(flname + "-save")
@@ -134,8 +141,13 @@ async (e)=>{
         console.log(flname)
 
         saveButton.addEventListener("click",
-        async (e)=>{
-          var sampleConfig = '{"title":"' + title + '","content":"' + document.getElementById(flname + "-editing").value + '"}'
+          async (e)=>{
+          
+          var dpObj = new DOMParser();
+          var xmlText = document.getElementById("workspace").innerHTML;
+          var xmlDoc = dpObj.parseFromString(xmlText, "text/xml");
+          
+          var sampleConfig = JSON.stringify({"title":title, "content":xmlDoc})
       
           console.log("clickイベント動いてます")
 
@@ -168,13 +180,18 @@ async (e)=>{
       for (var i = 0;i < tabs.length;i++){
         tabs[i].setAttribute("class","tabnotselected");
       };
-      e.target.setAttribute("class","tabselected");
-      ontabclickedprocess[parseInt(e.target.id)]();
+      e.srcElement.setAttribute("class","tabselected");
+      ontabclickedprocess[parseInt(e.srcElement.id)]();
     });
     
     saveButton.addEventListener("click",
-    async (e)=>{
-        var sampleConfig = '{"title":"' + title + '","content":"' + document.getElementById(flname + "-editing").value + '"}';
+      async (e)=>{
+      
+      var dpObj = new DOMParser();
+      var xmlText = document.getElementById("workspace").innerHTML;
+      var xmlDoc = dpObj.parseFromString(xmlText, "text/xml");
+      
+      var sampleConfig = JSON.stringify({"title":title, "content":xmlDoc})
       
       console.log("clickイベント動いてます");
 
