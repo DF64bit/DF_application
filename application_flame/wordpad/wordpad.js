@@ -101,11 +101,17 @@ async (e)=>{
     document.title = flname + " - JS WordPad";
 
     document.getElementById("workspace").innerHTML = "";
-    var newworkspace = document.createElement("div");
-    document.getElementById("workspace").appendChild(newworkspace);
-    newworkspace.id = flname + "-edit";
-    newworkspace.innerHTML = content;
+    document.getElementById("workspace").innerHTML = content;
+    var textareas = document.getElementsByClassName("textareas");
+    for (var i = 0;i<textareas.length;i++){
+      textareas[i].addEventListener("input",
+      async (e)=>{
+        e.target.innerHTML = e.target.value;
+      })
+    }
+
     var saveButton = document.createElement("button");
+    document.getElementById("insavebutton").innerHTML = "";
     document.getElementById("insavebutton").appendChild(saveButton);
     saveButton.id = flname + "-save";
     saveButton.textContent = "保存";
@@ -127,12 +133,16 @@ async (e)=>{
 
         document.title = flname + " - JS WordPad"
 
-        document.getElementById("workspace").innerHTML = ""
-        var newworkspace = document.createElement("div")
-        document.getElementById("workspace").appendChild(newworkspace)
-        newworkspace.id = flname + "-edit"
-        newworkspace.innerHTML = content
+        document.getElementById("workspace").innerHTML = content
+        var textareas = document.getElementsByClassName("textareas");
+          for (var i = 0;i<textareas.length;i++){
+          textareas[i].addEventListener("input",
+          async (e)=>{
+            e.target.innerHTML = e.target.value;
+          })
+        }
         var saveButton = document.createElement("button")
+        document.getElementById("insavebutton").innerHTML = "";
         document.getElementById("insavebutton").appendChild(saveButton)
         saveButton.id = flname + "-save"
         saveButton.textContent = "保存"
@@ -143,11 +153,7 @@ async (e)=>{
         saveButton.addEventListener("click",
           async (e)=>{
           
-          var dpObj = new DOMParser();
-          var xmlText = document.getElementById("workspace").innerHTML;
-          var xmlDoc = dpObj.parseFromString(xmlText, "text/xml");
-          
-          var sampleConfig = JSON.stringify({"title":title, "content":xmlDoc})
+          var sampleConfig = "<navigator><title>test</title><creator>admin</creator><lastsaved>2023-03-07</lastsaved><content>" + document.getElementById("workspace").innerHTML + "</content></navigator>";
       
           console.log("clickイベント動いてます")
 
@@ -187,11 +193,7 @@ async (e)=>{
     saveButton.addEventListener("click",
       async (e)=>{
       
-      var dpObj = new DOMParser();
-      var xmlText = document.getElementById("workspace").innerHTML;
-      var xmlDoc = dpObj.parseFromString(xmlText, "text/xml");
-      
-      var sampleConfig = JSON.stringify({"title":title, "content":xmlDoc})
+      var sampleConfig = "<navigator><title>test</title><creator>admin</creator><lastsaved>2023-03-07</lastsaved><content>" + document.getElementById("workspace").innerHTML + "</content></navigator>"
       
       console.log("clickイベント動いてます");
 
