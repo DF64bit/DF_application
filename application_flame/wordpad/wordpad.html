@@ -4,9 +4,43 @@
     <meta charset="utf-8">
     <link rel="icon" type="image/svg" href="assets/wordpad-icon.svg">
     <title>JS Wordpad</title>
-    <script src="dexie.js"></script>
+    <script src="umd.js"></script>
+    <script type="module">
+      import { get, set } from 'esm.js';
+    </script>
+    <style>
+      ul#sectionbar-select {
+        margin:0px;
+      }
+      button.tabselected{
+        color: #555;
+        font-family: "Helvetica Neue",Helvetica,Ariral,sans-serif;
+        border-color:#555 #555 #fff #555;
+        border-style: solid; 
+        border-width: thin;
+        border-radius: 7px 7px 0px 0px;
+        height: 30px;
+        background-color:#fff;
+      }
+      button.tabnotselected{
+        color: #555;
+        font-family: "Helvetica Neue",Helvetica,Ariral,sans-serif;
+        border-color:#fff #fff #555 #fff;
+        border-style: solid; 
+        border-width: thin;
+        border-radius: 7px 7px 0px 0px;
+        height: 30px;
+        background-color:#fff
+      }
+    </style>
   </head>
-  <body>
+  <body style="margin:0px;">
+    <p style="background-color: #dddddd; margin: 0px; size: 2cm;"><br><br></p>
+    <ul id="sectionbar-select" style="background-color: #c0c0c0; list-style: none; padding:0px;width:55px;height:100vh;float: left;position: absolute;">
+      <li style="height:55px;" id="finder"><img name="ファインダー" style="width:30px; height:37.5px; margin-left:12.5px; margin-right:12.5px; margin-top:10px; margin-bottom:10px;" id="explorer-button" src="assets/finder-icon.svg" width="30px;" height="35px;"></img></li>
+      <li style="height:55px;" id="editmenu"><img name="編集メニュー" style="width:30px; height:37.5px; margin-left:12.5px; margin-right:12.5px; margin-top:10px; margin-bottom:10px;" id="explorer-button" src="assets/editmenu-icon.svg" width="30px;" height="30px;"></img></li>
+    </ul>
+    <ul id="sectionbar" style="list-style:none; margin-left:55px; margin-top:0px; margin-bottom:0px; padding:0px; height:100vh; float:left; background-color:#cbcbcb; width:6cm; overflow: scroll;"></ul>
     <div id="inuploadbutton">
       <h1>ワードパッドの試作品</h1>
       <p>フォルダをアップロードし、そのフォルダ内にあるテキストファイルを編集するアプリです(txtファイルしか編集できません)</p>
@@ -14,6 +48,8 @@
     </div>
     <script src="wordpad.js" charset="utf-8"></script>
     <div id="other"></div>
-    <ul id="workspace" style="display:flex; list-style:none;"></ul>
+    <ul id="tabs" style="list-style:none;"></ul>
+    <div id="workspace" style="height: 510px;overflow: scroll;"></div>
+    <div id="insavebutton"></div>
   </body>
 </html>
