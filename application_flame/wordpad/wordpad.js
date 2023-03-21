@@ -1,6 +1,8 @@
 var uploadButton = document.getElementById("upload");
 uploadButton.addEventListener("click",
 async (e)=>{
+  
+  
   var dirHandle = await idbKeyval.get('dir');
  
   if (dirHandle) {
@@ -16,6 +18,16 @@ async (e)=>{
   };
   console.log(dirHandle);
 
+  var nicname = await idbKeyval.get("nicname");
+  if (!nicname) {
+    var nicnameresult = "";
+    while (nicnameresult == "" || nicnameresult == null){
+      nicnameresult = window.prompt("名前を入力してください")
+    }
+    idbKeyval.set("nicname",nicnameresult)
+    nicname = nicnameresult;
+  }
+
   var ontabclickedprocess = [];
   var iv = -1;
   var tabs = [];
@@ -29,25 +41,180 @@ async (e)=>{
     }
   };
   console.log(files);
-  for (var i =0;i < files.length;i++){
-    console.log("forが始まったぞ");
-    var but = document.createElement("button");
-    document.getElementById("sectionbar").appendChild(but);
-    but.textContent = files[i];
-    but.setAttribute("id",files[i] + "-select")
-    but.addEventListener("click",
-      async (e)=>{
-        //console.log(e.path);
-        document.getElementById("other").innerHTML = "<button id='opfile'>ファイルを開く</button>";
-        document.getElementById("opfile").addEventListener("click",
+  async function showopenfilebutton (){
+    document.getElementById("sectionbar").innerHTML = "";
+
+    
+    var createfilebutton = document.createElement("button");
+    createfilebutton.innerHTML = "新しくファイルを作成..."
+    document.getElementById('sectionbar').appendChild(createfilebutton)
+    createfilebutton.addEventListener("click",
+    async (e)=>{
+      var newfilename = await window.prompt("新しく作成するファイルの名前を入力してください。")
+      var newfilehandle = await dirHandle.getFileHandle(newfilename + '.xml', { create: true });
+      var sampleConfig = '<navigator><title>' + newfilename + '</title><creator>' + nicname + '</creator><lastsaved>2023-03-07</lastsaved><content><textarea rows="25" cols="117" class="textareas">ここに文字を入力...</textarea></content></navigator>';
+      
+      console.log("clickイベント動いてます")
+
+      var blob = new Blob([sampleConfig], {
+        type: "text/plain"
+      })
+
+      var writableStream = await newfilehandle.createWritable()
+      await writableStream.write(blob)
+      await writableStream.close()
+      console.log(flname)
+      idbKeyval.set('dir', dirHandle)
+      showopenfilebutton();
+      
+      
+    })
+    document.getElementById("sectionbar").appendChild(document.createElement("br"));
+    document.getElementById("sectionbar").appendChild(document.createElement("br"));
+
+    for (var i =0;i < files.length;i++){
+      console.log("forが始まったぞ");
+      var newflexmenu = document.createElement("div");
+      document.getElementById("sectionbar").appendChild(newflexmenu);
+      newflexmenu.setAttribute("height","220");
+      newflexmenu.setAttribute("style","border-radius: 10px; border: 3px solid; border-color: #038cfc; background-color:#ffffff;")
+      var but = document.createElement("button");
+      newflexmenu.appendChild(but);
+      but.textContent = files[i];
+      but.setAttribute("id",files[i] + "-select")
+      but.setAttribute("class","openfiles")
+      but.addEventListener("click",
         async (e)=>{
-          openfile();
-        });
-        console.log(i)
-        editingfile(e.srcElement.innerHTML);
-        console.log(files[i]);
+          //console.log(e.path);
+          document.getElementById("other").innerHTML = "<button id='opfile'>ファイルを開く</button>";
+          document.getElementById("opfile").addEventListener("click",
+          async (e)=>{
+            openfile();
+          });
+          console.log(i)
+          editingfile(e.srcElement.innerHTML);
+          console.log(files[i]);
       });
+      var detail = document.createElement("p")
+      newflexmenu.appendChild(detail)
+      var file = await dirHandle.getFileHandle(files[i]);
+      var fileData = await file.getFile();
+      var filecontent = await fileData.text();
+      var dpObj = new DOMParser();
+      var xmlText = '<?xml version="1.0" encoding="UTF-8"?>';
+      xmlText += filecontent;
+      var xmlDoc = dpObj.parseFromString(xmlText, "text/xml");
+      detail.innerHTML = "作成者<br>" + xmlDoc.getElementsByTagName("creator")[0].innerHTML;
+      document.getElementById("sectionbar").appendChild(document.createElement("br"));
+    }
+    
   }
+  showopenfilebutton();
+  document.getElementById("finder").addEventListener("click",
+  async (e)=>{
+    showopenfilebutton();
+  });
+  document.getElementById("editmenu").addEventListener("click",
+  (e)=>{
+    var secbar = document.getElementById("sectionbar");
+    secbar.innerHTML = "";
+    var uploadimagebutton = document.createElement("button");
+    uploadimagebutton.innerHTML = "画像をアップロード";
+    secbar.appendChild(uploadimagebutton);
+    var uploadaudiobutton = document.createElement("button");
+    uploadaudiobutton.innerHTML = "音声をアップロード";
+    secbar.appendChild(uploadaudiobutton);
+    var uploadvideobutton = document.createElement("button");
+    uploadvideobutton.innerHTML = "動画をアップロード";
+    secbar.appendChild(uploadvideobutton);
+    uploadimagebutton.addEventListener("click",
+    async (e)=>{
+      var pickeroption = {
+        types: [
+            {
+              description: 'Images',
+              accept: {
+                'image/*': ['.png', '.gif', '.jpeg', '.jpg','.webp','.svg']
+              }
+            },
+          ]
+        }
+      var fh_list = await window.showOpenFilePicker(pickeroption);
+      var fh = fh_list[0];
+      var imagefile = await fh.getFile(); 
+      var reader = new FileReader()
+      reader.addEventListener('load', e => {
+        var dataurlfromimage = reader.result;
+        document.getElementById("workspace").appendChild(document.createElement("br"));
+        var newimage = document.createElement("img");
+        newimage.setAttribute("src",dataurlfromimage);
+        document.getElementById("workspace").appendChild(newimage)
+      })
+      
+      if (imagefile) {
+        reader.readAsDataURL(imagefile);
+      }
+    })
+    uploadaudiobutton.addEventListener("click",
+    async (e)=>{
+      var pickeroption = {
+        types: [
+          {
+            description: "audios",
+            accept: {
+              "audio/*": [".wav", ".mp3", "midi", "mid"]
+            }
+          },
+        ]
+      }
+      var fh_list = await window.showOpenFilePicker();
+      var fh = fh_list[0];
+      var audiofile = await fh.getFile();
+      var reader = new FileReader();
+      reader.addEventListener("load", e => {
+        var dataurlfromaudio = reader.result;
+        document.getElementById("workspace").appendChild(document.createElement("br"));
+        var newaudio = document.createElement("audio");
+        newaudio.setAttribute("controls","");
+        newaudio.setAttribute("src",dataurlfromaudio);
+        document.getElementById("workspace").appendChild(newaudio)
+      })
+
+      if (audiofile) {
+        reader.readAsDataURL(audiofile);
+      }
+    })
+    uploadvideobutton.addEventListener("click",
+    async (e)=>{
+      var pickeroption = {
+        types: [
+            {
+              description: 'videos',
+              accept: {
+                'video/*': ['.mpeg', '.mp4', '.webm']
+              }
+            },
+          ]
+        }
+      var fh_list = await window.showOpenFilePicker(pickeroption);
+      var fh = fh_list[0];
+      var videofile = await fh.getFile();
+      var reader = new FileReader();
+      reader.addEventListener('load', e => {
+        var dataurlfromvideo = reader.result;
+        document.getElementById("workspace").appendChild(document.createElement("br"));
+        var newvideo = document.createElement('video');
+        newvideo.setAttribute('src', dataurlfromvideo);
+        newvideo.setAttribute('type',videofile.type)
+        newvideo.setAttribute("controls","");
+        document.getElementById('workspace').appendChild(newvideo)
+      })
+      
+      if (videofile) {
+        reader.readAsDataURL(videofile);
+      }
+    })
+  });
 
   document.getElementById("other").innerHTML = "開いてるファイルが無い<button id='opfile'>ファイルを開く</button>";
   document.getElementById("inuploadbutton").innerHTML = "";
@@ -131,6 +298,7 @@ async (e)=>{
         var title = xmlDoc.getElementsByTagName('title')[0].textContent
         var content = xmlDoc.getElementsByTagName("content")[0].innerHTML
 
+
         document.title = flname + " - JS WordPad"
 
         document.getElementById("workspace").innerHTML = content
@@ -151,9 +319,9 @@ async (e)=>{
         console.log(flname)
 
         saveButton.addEventListener("click",
-          async (e)=>{
+        async (e)=>{
           
-          var sampleConfig = "<navigator><title>test</title><creator>admin</creator><lastsaved>2023-03-07</lastsaved><content>" + document.getElementById("workspace").innerHTML + "</content></navigator>";
+          var sampleConfig = "<navigator><title>test</title><creator>" + nicname + "</creator><lastsaved>2023-03-07</lastsaved><content>" + document.getElementById("workspace").innerHTML + "</content></navigator>";
       
           console.log("clickイベント動いてます")
 
@@ -193,7 +361,7 @@ async (e)=>{
     saveButton.addEventListener("click",
       async (e)=>{
       
-      var sampleConfig = "<navigator><title>test</title><creator>admin</creator><lastsaved>2023-03-07</lastsaved><content>" + document.getElementById("workspace").innerHTML + "</content></navigator>"
+      var sampleConfig = "<navigator><title>test</title><creator>" + nicname + "</creator><lastsaved>2023-03-07</lastsaved><content>" + document.getElementById("workspace").innerHTML + "</content></navigator>"
       
       console.log("clickイベント動いてます");
 
