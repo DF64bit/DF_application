@@ -74,6 +74,15 @@ async (e)=>{
 
     for (var i =0;i < files.length;i++){
       console.log("forが始まったぞ");
+      var file = await dirHandle.getFileHandle(files[i]);
+      var fileData = await file.getFile();
+      var filecontent = await fileData.text();
+      var dpObj = new DOMParser();
+      var xmlText = '<?xml version="1.0" encoding="UTF-8"?>';
+      xmlText += filecontent;
+      var xmlDoc = dpObj.parseFromString(xmlText, "text/xml");
+      var xmlcreator = xmlDoc.getElementsByTagName("creator")[0].innerHTML;
+      if (xmlcreator === await idbKeyval.get("nicname")){
       var newflexmenu = document.createElement("div");
       document.getElementById("sectionbar").appendChild(newflexmenu);
       newflexmenu.setAttribute("height","220");
@@ -106,6 +115,7 @@ async (e)=>{
       var xmlDoc = dpObj.parseFromString(xmlText, "text/xml");
       detail.innerHTML = "作成者<br>" + xmlDoc.getElementsByTagName("creator")[0].innerHTML;
       document.getElementById("sectionbar").appendChild(document.createElement("br"));
+    }
     }
     
   }
