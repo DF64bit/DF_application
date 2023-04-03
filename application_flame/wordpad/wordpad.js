@@ -82,7 +82,8 @@ async (e)=>{
       xmlText += filecontent;
       var xmlDoc = dpObj.parseFromString(xmlText, "text/xml");
       var xmlcreator = xmlDoc.getElementsByTagName("creator")[0].innerHTML;
-      if (xmlcreator === await idbKeyval.get("nicname")){
+      var xmlshared = xmlDoc.getElementsByTagName("shared")[0].innerHTML;
+      if (xmlcreator === await idbKeyval.get("nicname") || xmlshared == "true"){
       var newflexmenu = document.createElement("div");
       document.getElementById("sectionbar").appendChild(newflexmenu);
       newflexmenu.setAttribute("height","220");
