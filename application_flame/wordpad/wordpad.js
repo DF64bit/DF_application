@@ -17,6 +17,7 @@ async (e)=>{
     dirHandle = await window.showDirectoryPicker();
   };
   console.log(dirHandle);
+  var openetedfile = "";
 
   var nicname = await idbKeyval.get("nicname");
   if (!nicname) {
@@ -52,7 +53,7 @@ async (e)=>{
     async (e)=>{
       var newfilename = await window.prompt("新しく作成するファイルの名前を入力してください。")
       var newfilehandle = await dirHandle.getFileHandle(newfilename + '.xml', { create: true });
-      var sampleConfig = '<navigator><title>' + newfilename + '</title><creator>' + nicname + '</creator><lastsaved>2023-03-07</lastsaved><content><textarea rows="25" cols="117" class="textareas">ここに文字を入力...</textarea></content></navigator>';
+      var sampleConfig = '<navigator><title>' + newfilename + '</title><creator>' + nicname + '</creator><lastsaved>2023-03-07</lastsaved><shared>false</shared><content><textarea rows="25" cols="117" class="textareas">ここに文字を入力...</textarea></content></navigator>';
       
       console.log("clickイベント動いてます")
 
@@ -226,6 +227,42 @@ async (e)=>{
       }
     })
   });
+  document.getElementById("gitmenu").addEventListener("click",
+  async (e)=>{
+    var secbar = document.getElementById("sectionbar");
+    secbar.innerHTML = "";
+    var sharebutton = document.createElement("button");
+    secbar.appendChild(sharebutton);
+    sharebutton.innerHTML = "この文書を共有..."
+    sharebutton.addEventListener("click",
+    async (e)=>{
+      //openetedfileを忘れるな
+      window.alert("共有します。")
+      var file = await dirHandle.getFileHandle(openetedfile)
+          var fileData = await file.getFile()
+          var text = await fileData.text()
+          var dpObj = new DOMParser()
+          var xmlText = '<?xml version="1.0" encoding="UTF-8"?>'
+          xmlText += text
+          var xmlDoc = dpObj.parseFromString(xmlText, "text/xml")
+          var xmltitle = xmlDoc.getElementsByTagName("title")[0].innerHTML;
+          var sampleConfig = "<navigator><title>" + xmltitle + "</title><creator>" + nicname + "</creator><lastsaved>2023-03-07</lastsaved><shared>true<content>" + document.getElementById("workspace").innerHTML + "</content></navigator>";
+      
+          console.log("clickイベント動いてます")
+
+          var blob = new Blob([sampleConfig], {
+            type: "text/plain"
+          })
+
+          var writableStream = await file.createWritable()
+          await writableStream.write(blob)
+          await writableStream.close()
+          window.alert("共有しました。 ")
+          console.log(openetedfile)
+          idbKeyval.set('dir', dirHandle)
+      
+    });
+  })
 
   document.getElementById("other").innerHTML = "開いてるファイルが無い<button id='opfile'>ファイルを開く</button>";
   document.getElementById("inuploadbutton").innerHTML = "";
@@ -265,6 +302,7 @@ async (e)=>{
   };
 
   async function editingfile(flname){
+    openetedfile = flname;
     console.log(flname);
     var file = await dirHandle.getFileHandle(flname);
     var fileData = await file.getFile();
@@ -298,13 +336,14 @@ async (e)=>{
     console.log(flname);
     ontabclickedprocess.push(
       async (e)=>{
+        openetedfile = flname;
         console.log(flname)
         var file = await dirHandle.getFileHandle(flname)
         var fileData = await file.getFile()
         var text = await fileData.text()
         var dpObj = new DOMParser()
         var xmlText = '<?xml version="1.0" encoding="UTF-8"?>'
-        xmlText += filecontent
+        xmlText += text
         var xmlDoc = dpObj.parseFromString(xmlText, "text/xml")
         var title = xmlDoc.getElementsByTagName('title')[0].textContent
         var content = xmlDoc.getElementsByTagName("content")[0].innerHTML
@@ -331,8 +370,16 @@ async (e)=>{
 
         saveButton.addEventListener("click",
         async (e)=>{
-          
-          var sampleConfig = "<navigator><title>test</title><creator>" + nicname + "</creator><lastsaved>2023-03-07</lastsaved><content>" + document.getElementById("workspace").innerHTML + "</content></navigator>";
+          var file = await dirHandle.getFileHandle(flname)
+          var fileData = await file.getFile()
+          var text = await fileData.text()
+          var dpObj = new DOMParser()
+          var xmlText = '<?xml version="1.0" encoding="UTF-8"?>'
+          xmlText += filecontent
+          var xmlDoc = dpObj.parseFromString(xmlText, "text/xml")
+          var xmltitle = xmlDoc.getElementsByTagName("title")[0].innerHTML;
+          var xmlshared = xmlDoc.getElementsByTagName("shared").innerHTML;
+          var sampleConfig = "<navigator><title>" + xmltitle + "</title><creator>" + nicname + "</creator><lastsaved>2023-03-07</lastsaved><shared>" + xmlshared + "<content>" + document.getElementById("workspace").innerHTML + "</content></navigator>";
       
           console.log("clickイベント動いてます")
 
@@ -371,15 +418,16 @@ async (e)=>{
     
     saveButton.addEventListener("click",
       async (e)=>{
-      var fileData = await file.getFile();
-      var filecontent = await fileData.text();
-      var dpObj = new DOMParser();
-      var xmlText = '<?xml version="1.0" encoding="UTF-8"?>';
-      xmlText += filecontent;
-      var xmlDoc = dpObj.parseFromString(xmlText, "text/xml");
-      var xmltitle = xmlDoc.getElementsByTagName("title")[0].innerHTML;
-      
-      var sampleConfig = "<navigator><title>" + xmltitle + "</title><creator>" + nicname + "</creator><lastsaved>2023-03-07</lastsaved><shared>false</shared><content>" + document.getElementById("workspace").innerHTML + "</content></navigator>"
+      var file = await dirHandle.getFileHandle(flname)
+      var fileData = await file.getFile()
+      var text = await fileData.text()
+      var dpObj = new DOMParser()
+      var xmlText = '<?xml version="1.0" encoding="UTF-8"?>'
+      xmlText += text
+      var xmlDoc = dpObj.parseFromString(xmlText, "text/xml")
+      var xmltitle = xmlDoc.getElementsByTagName("title").innerHTML;
+      var xmlshared = xmlDoc.getElementsByTagName("shared").innerHTML;
+      var sampleConfig = "<navigator><title>" + xmltitle + "</title><creator>" + nicname + "</creator><lastsaved>2023-03-07</lastsaved><shared>" + xmlshared + "</shared><content>" + document.getElementById("workspace").innerHTML + "</content></navigator>"
       
       console.log("clickイベント動いてます");
 
