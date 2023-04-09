@@ -18,6 +18,10 @@ async (e)=>{
   };
   console.log(dirHandle);
   var openetedfile = "";
+  function sleep(waitMsec) {
+    var startMsec = new Date();
+    while (new Date() - startMsec < waitMsec);
+  }
 
   var nicname = await idbKeyval.get("nicname");
   if (!nicname) {
@@ -66,6 +70,7 @@ async (e)=>{
       await writableStream.close()
       console.log(flname)
       idbKeyval.set('dir', dirHandle)
+      sleep(800);
       showopenfilebutton();
       
       
@@ -245,8 +250,8 @@ async (e)=>{
           var xmlText = '<?xml version="1.0" encoding="UTF-8"?>'
           xmlText += text
           var xmlDoc = dpObj.parseFromString(xmlText, "text/xml")
-          var xmltitle = xmlDoc.getElementsByTagName("title")[0].innerHTML;
-          var sampleConfig = "<navigator><title>" + xmltitle + "</title><creator>" + nicname + "</creator><lastsaved>2023-03-07</lastsaved><shared>true<content>" + document.getElementById("workspace").innerHTML + "</content></navigator>";
+          var tit = xmlDoc.getElementsByTagName("title")[0].innerHTML;
+          var sampleConfig = "<navigator><title>" + tit + "</title><creator>" + nicname + "</creator><lastsaved>2023-03-07</lastsaved><shared>true</shared><content>" + document.getElementById("workspace").innerHTML + "</content></navigator>";
       
           console.log("clickイベント動いてます")
 
@@ -378,7 +383,7 @@ async (e)=>{
           xmlText += filecontent
           var xmlDoc = dpObj.parseFromString(xmlText, "text/xml")
           var xmltitle = xmlDoc.getElementsByTagName("title")[0].innerHTML;
-          var xmlshared = xmlDoc.getElementsByTagName("shared").innerHTML;
+          var xmlshared = xmlDoc.getElementsByTagName("shared")[0].innerHTML;
           var sampleConfig = "<navigator><title>" + xmltitle + "</title><creator>" + nicname + "</creator><lastsaved>2023-03-07</lastsaved><shared>" + xmlshared + "<content>" + document.getElementById("workspace").innerHTML + "</content></navigator>";
       
           console.log("clickイベント動いてます")
@@ -425,8 +430,8 @@ async (e)=>{
       var xmlText = '<?xml version="1.0" encoding="UTF-8"?>'
       xmlText += text
       var xmlDoc = dpObj.parseFromString(xmlText, "text/xml")
-      var xmltitle = xmlDoc.getElementsByTagName("title").innerHTML;
-      var xmlshared = xmlDoc.getElementsByTagName("shared").innerHTML;
+      var xmltitle = xmlDoc.getElementsByTagName("title")[0].innerHTML;
+      var xmlshared = xmlDoc.getElementsByTagName("shared")[0].innerHTML;
       var sampleConfig = "<navigator><title>" + xmltitle + "</title><creator>" + nicname + "</creator><lastsaved>2023-03-07</lastsaved><shared>" + xmlshared + "</shared><content>" + document.getElementById("workspace").innerHTML + "</content></navigator>"
       
       console.log("clickイベント動いてます");
