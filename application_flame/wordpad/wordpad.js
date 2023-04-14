@@ -351,10 +351,18 @@ async (e)=>{
       async (e)=>{
         if (!showededitingimgdialog) {
           showededitingimgdialog = true;
+          var editingimg = e.target;
           var neweditingimgdialog = document.createElement("div");
           neweditingimgdialog.setAttribute("class","editingimgdialog");
           document.getElementById("workspace").insertBefore(neweditingimgdialog,e.target);
-          neweditingimgdialog.innerHTML = "<button>aaaa</button>"
+          var deleteimgbutton = document.createElement("button");
+          deleteimgbutton.innerHTML = "画像を削除"
+          neweditingimgdialog.appendChild(deleteimgbutton);
+          deleteimgbutton.addEventListener("click",
+          async (e)=>{
+            editingimg.remove();
+            neweditingimgdialog.remove();
+          })
         }
       })
     }
@@ -390,6 +398,27 @@ async (e)=>{
           textareas[i].addEventListener("input",
           async (e)=>{
             e.target.innerHTML = e.target.value;
+          })
+        }
+        var imgs = document.getElementsByClassName("images");
+        for (var i = 0;i<imgs.length;i++){
+          imgs[i].addEventListener("click",
+          async (e)=>{
+            if (!showededitingimgdialog) {
+              showededitingimgdialog = true;
+              var editingimg = e.target;
+              var neweditingimgdialog = document.createElement("div");
+              neweditingimgdialog.setAttribute("class","editingimgdialog");
+              document.getElementById("workspace").insertBefore(neweditingimgdialog,e.target);
+              var deleteimgbutton = document.createElement("button");
+              deleteimgbutton.innerHTML = "画像を削除"
+              neweditingimgdialog.appendChild(deleteimgbutton);
+              deleteimgbutton.addEventListener("click",
+              async (e)=>{
+                editingimg.remove();
+                neweditingimgdialog.remove();
+              })
+            }
           })
         }
         var saveButton = document.createElement("button")
