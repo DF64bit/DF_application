@@ -36,6 +36,7 @@ async (e)=>{
   var ontabclickedprocess = [];
   var iv = -1;
   var tabs = [];
+  var showededitingimgdialog = false;
 
   var files = [];
   for await (var handle of dirHandle.values()) {
@@ -348,7 +349,13 @@ async (e)=>{
     for (var i = 0;i<imgs.length;i++){
       imgs[i].addEventListener("click",
       async (e)=>{
-        //ここに画像がクリックされたときの処理を追加する予定
+        if (!showededitingimgdialog) {
+          showededitingimgdialog = true;
+          var neweditingimgdialog = document.createElement("div");
+          neweditingimgdialog.setAttribute("class","editingimgdialog");
+          document.getElementById("workspace").insertBefore(neweditingimgdialog,e.target);
+          neweditingimgdialog.innerHTML = "<button>aaaa</button>"
+        }
       })
     }
 
