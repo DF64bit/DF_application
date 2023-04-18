@@ -418,6 +418,34 @@ async (e)=>{
                 editingimg.remove();
                 neweditingimgdialog.remove();
               })
+              var replimgbutton = document.createElement("button");
+              replimgbutton.innerHTML = "画像を置き換え";
+              document.getElementsByClassName("editingimgdialog")[0].appendChild(replimgbutton);
+              replimgbutton.addEventListener("click",
+              async (e)=>{
+                var pickeroption = {
+                  types: [
+                      {
+                        description: 'Images',
+                        accept: {
+                          'image/*': ['.png', '.gif', '.jpeg', '.jpg','.webp','.svg']
+                        }
+                      },
+                    ]
+                  }
+                var fh_list = await window.showOpenFilePicker(pickeroption);
+                var fh = fh_list[0];
+                var imagefile = await fh.getFile(); 
+                var reader = new FileReader()
+                reader.addEventListener('load', e => {
+                  editingimg.src = reader.result;
+                  document.getElementsByClassName("editingimgdialog")[0].remove();
+                })
+                
+                if (imagefile) {
+                  reader.readAsDataURL(imagefile);
+                }
+              })
             }
           })
         }
