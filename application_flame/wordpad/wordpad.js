@@ -121,7 +121,8 @@ async (e)=>{
       var xmlText = '<?xml version="1.0" encoding="UTF-8"?>';
       xmlText += filecontent;
       var xmlDoc = dpObj.parseFromString(xmlText, "text/xml");
-      detail.innerHTML = "作成者<br>" + xmlDoc.getElementsByTagName("creator")[0].innerHTML;
+      detail.innerHTML = "作成者:" + xmlDoc.getElementsByTagName("creator")[0].innerHTML;
+      detail.setAttribute('style','margin:0px; font-size: smaller;')
       document.getElementById("sectionbar").appendChild(document.createElement("br"));
     }
     }
