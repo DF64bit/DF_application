@@ -36,6 +36,7 @@ async (e)=>{
   var ontabclickedprocess = [];
   var iv = -1;
   var tabs = [];
+  var showededitingimgdialog = false;
 
   var files = [];
   for await (var handle of dirHandle.values()) {
@@ -120,7 +121,8 @@ async (e)=>{
       var xmlText = '<?xml version="1.0" encoding="UTF-8"?>';
       xmlText += filecontent;
       var xmlDoc = dpObj.parseFromString(xmlText, "text/xml");
-      detail.innerHTML = "作成者<br>" + xmlDoc.getElementsByTagName("creator")[0].innerHTML;
+      detail.innerHTML = "作成者:" + xmlDoc.getElementsByTagName("creator")[0].innerHTML;
+      detail.setAttribute('style','margin:0px; font-size: smaller;')
       document.getElementById("sectionbar").appendChild(document.createElement("br"));
     }
     }
@@ -348,7 +350,21 @@ async (e)=>{
     for (var i = 0;i<imgs.length;i++){
       imgs[i].addEventListener("click",
       async (e)=>{
-        //ここに画像がクリックされたときの処理を追加する予定
+        if (!showededitingimgdialog) {
+          showededitingimgdialog = true;
+          var editingimg = e.target;
+          var neweditingimgdialog = document.createElement("div");
+          neweditingimgdialog.setAttribute("class","editingimgdialog");
+          document.getElementById("workspace").insertBefore(neweditingimgdialog,e.target);
+          var deleteimgbutton = document.createElement("button");
+          deleteimgbutton.innerHTML = "画像を削除"
+          neweditingimgdialog.appendChild(deleteimgbutton);
+          deleteimgbutton.addEventListener("click",
+          async (e)=>{
+            editingimg.remove();
+            neweditingimgdialog.remove();
+          })
+        }
       })
     }
 
@@ -383,6 +399,55 @@ async (e)=>{
           textareas[i].addEventListener("input",
           async (e)=>{
             e.target.innerHTML = e.target.value;
+          })
+        }
+        var imgs = document.getElementsByClassName("images");
+        for (var i = 0;i<imgs.length;i++){
+          imgs[i].addEventListener("click",
+          async (e)=>{
+            if (!showededitingimgdialog) {
+              showededitingimgdialog = true;
+              var editingimg = e.target;
+              var neweditingimgdialog = document.createElement("div");
+              neweditingimgdialog.setAttribute("class","editingimgdialog");
+              document.getElementById("workspace").insertBefore(neweditingimgdialog,e.target);
+              var deleteimgbutton = document.createElement("button");
+              deleteimgbutton.innerHTML = "画像を削除"
+              neweditingimgdialog.appendChild(deleteimgbutton);
+              deleteimgbutton.addEventListener("click",
+              async (e)=>{
+                editingimg.remove();
+                neweditingimgdialog.remove();
+              })
+              var replimgbutton = document.createElement("button");
+              replimgbutton.innerHTML = "画像を置き換え";
+              document.getElementsByClassName("editingimgdialog")[0].appendChild(replimgbutton);
+              replimgbutton.addEventListener("click",
+              async (e)=>{
+                var pickeroption = {
+                  types: [
+                      {
+                        description: 'Images',
+                        accept: {
+                          'image/*': ['.png', '.gif', '.jpeg', '.jpg','.webp','.svg']
+                        }
+                      },
+                    ]
+                  }
+                var fh_list = await window.showOpenFilePicker(pickeroption);
+                var fh = fh_list[0];
+                var imagefile = await fh.getFile(); 
+                var reader = new FileReader()
+                reader.addEventListener('load', e => {
+                  editingimg.src = reader.result;
+                  document.getElementsByClassName("editingimgdialog")[0].remove();
+                })
+                
+                if (imagefile) {
+                  reader.readAsDataURL(imagefile);
+                }
+              })
+            }
           })
         }
         var saveButton = document.createElement("button")
